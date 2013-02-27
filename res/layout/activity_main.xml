@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_table_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:shrinkColumns="*"  
+    android:stretchColumns="*">
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login" 
+        android:onClick="config_yahoo"/>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="config_google"
+        android:text="Get Roster" />
+
+    <TableLayout
+        android:id="@+id/info_table_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </TableLayout>
+
+</TableLayout>
