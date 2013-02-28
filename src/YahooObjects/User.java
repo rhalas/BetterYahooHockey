@@ -12,6 +12,10 @@ public class User implements Parcelable{
 	//Lot more fields we can get, team_key is good enough for now though
 	public String team_key;
 	
+	public User(){
+		
+	}
+	
 	public User(Handler handler, int msg_id){
     	this.handler = handler;
     	this.msg_id = msg_id;
@@ -20,8 +24,8 @@ public class User implements Parcelable{
 	}
 	
 	public void PopulateUser(){
-		RosterStatsQuery r = new RosterStatsQuery(null, null, null, this.handler, this.msg_id);
-		r.execute(null, null, null);
+		UserQuery u = new UserQuery(this, this.handler, this.msg_id);
+		u.execute(null, null, null);
 	}
 	
 	public User(Parcel in){

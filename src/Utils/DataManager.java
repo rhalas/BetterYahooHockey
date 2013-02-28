@@ -54,6 +54,6 @@ public class DataManager {
         		"https://api.login.yahoo.com/oauth/v2/get_token",
         		"https://api.login.yahoo.com/oauth/v2/request_auth", 
                 DataManager.client);
-        
+
     }
 }

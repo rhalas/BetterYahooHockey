@@ -27,7 +27,7 @@ public class Roster implements Parcelable {
 			this.goalie_stats = new GoalieStats();
 		}
 	}
-	
+	 
 	public Roster(String league_id, String date, Handler handler, int msg_id){
 		this.league_id = league_id;
 		this.date = date;
@@ -54,8 +54,6 @@ public class Roster implements Parcelable {
 	public void PopulateRoster(){
 		RosterStatsQuery r = new RosterStatsQuery(this.league_id, this.date, this, this.handler, this.msg_id);
 		r.execute(null, null, null);
-		//UserQuery u = new UserQuery(null, this.handler, this.msg_id);
-		//u.execute(null, null, null);
 	}
 	
 	public RosterStats CompareRoster(Roster r){
@@ -78,49 +76,52 @@ public class Roster implements Parcelable {
 		return rs;
 	}
 	
-	public String GenerateStatChangeText(RosterStats stats){
+	public String GenerateSkaterStatChangeText(RosterStats stats){
 		String text = "";
 		
 		if(stats.skater_stats.goals != 0){
-			text += "G: " + stats.skater_stats.goals;
+			text += "G:" + stats.skater_stats.goals;
 		}
 		if(stats.skater_stats.assists != 0){
-			text += "A: " + stats.skater_stats.assists;
+			text += " A:" + stats.skater_stats.assists;
 		}
 		if(stats.skater_stats.plus_minus != 0){
-			text += "+/-: " + stats.skater_stats.plus_minus;
+			text += " +/-: " + stats.skater_stats.plus_minus;
 		}
 		if(stats.skater_stats.power_play_points != 0){
-			text += "PPP: " + stats.skater_stats.power_play_points;
+			text += " PPP: " + stats.skater_stats.power_play_points;
 		}
 		if(stats.skater_stats.shots_on_goal != 0){
-			text += "S: " + stats.skater_stats.shots_on_goal;
+			text += " S:" + stats.skater_stats.shots_on_goal;
 		}
 		if(stats.skater_stats.hits != 0){
-			text += "H: " + stats.skater_stats.hits;
+			text += " H:" + stats.skater_stats.hits;
 		}
 		
-		//Comment out goalie stats for now, find better way to display notification for them
-
+		return text;
+	}
+	
+	public String GenerateGoalieStatChangeText(RosterStats stats){
+		String text = "";
+		
 		if(stats.goalie_stats.gaa != 0){
 			text += "GAA:" + stats.goalie_stats.gaa;
 		}
 		if(stats.goalie_stats.saves != 0){
-			text += "S:" + stats.goalie_stats.saves;
+			text += " S:" + stats.goalie_stats.saves;
 		}
 		if(stats.goalie_stats.save_attempts != 0){
-			text += "SA:" + stats.goalie_stats.save_attempts;
+			text += " SA:" + stats.goalie_stats.save_attempts;
 		}
 		if(stats.goalie_stats.save_percentage != 0){
-			text += "S%:" + stats.goalie_stats.save_percentage;
+			text += " S%:" + stats.goalie_stats.save_percentage;
 		}
-		/*
 		if(stats.goalie_stats.wins != 0){
-			text += "W:" + stats.goalie_stats.wins;
+			text += " W:" + stats.goalie_stats.wins;
 		}
 		if(stats.goalie_stats.shutouts != 0){
-			text += "SO:" + stats.goalie_stats.shutouts;
-		}*/
+			text += " SO:" + stats.goalie_stats.shutouts;
+		}
 		
 		return text;
 	}

@@ -28,8 +28,11 @@ public class RosterStatsQuery extends ExecuteSignedGet{
 	public String GenerateURL(){
 		String url = "http://fantasysports.yahooapis.com/fantasy/v2/team/";
 		url += this.team_key;
-		url += "/roster/players/stats;type=date;date=";
-		url += this.date_string;
+		url += "/roster/players/stats";
+		if(this.date_string.compareTo("") != 0){
+			url += ";type=date;date=";
+			url += this.date_string;
+		}
 		url += "?format=json";
 		return url;
 	}
@@ -37,18 +40,10 @@ public class RosterStatsQuery extends ExecuteSignedGet{
 	public Parcelable parse_json(JSONObject jObj){
 		List<Player> players = new ArrayList<Player>();
 		
-		List<String> nodes = new ArrayList<String>(Arrays.asList("fantasy_content", "team"));
-		JSONArray array = JSONParser.GetJSONArray(jObj, nodes);
+		JSONArray array = JSONParser.GetJSONArray(jObj, Arrays.asList("fantasy_content", "team"));
 		
 		try {
-			jObj = array.getJSONObject(1);		
-			
-			nodes.clear();
-			nodes.add("roster");
-			nodes.add("0");
-			nodes.add("players");
-			
-			jObj = JSONParser.GetJSONObject(jObj, nodes);
+			jObj = JSONParser.GetJSONObject(array.getJSONObject(1), Arrays.asList("roster", "0", "players"));
 			
 			JSONObject jObjTmp;
 			

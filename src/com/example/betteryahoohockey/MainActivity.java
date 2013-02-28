@@ -10,6 +10,7 @@ import YahooObjects.GoalieStats;
 import YahooObjects.Roster;
 import YahooObjects.Roster.RosterStats;
 import YahooObjects.SkaterStats;
+import YahooObjects.User;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
@@ -19,6 +20,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.View;
@@ -50,9 +52,14 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	public DataManager dm;
 	public Roster current_roster;
-
+	public User u;
+	
+	public boolean isLoggedIn = false;
+	
 	private Context context;
 	private Intent myIntent;
+	
+	private static final String PERFS_NAME = "BetterYahooHockeyPerfs";
 	
 	/** Messenger for communicating with service. */
 	Messenger mService = null;
@@ -223,12 +230,39 @@ public class MainActivity extends Activity {
         context = getApplicationContext();
         setContentView(R.layout.activity_main);
         
-		startServiceFunc();
+        SharedPreferences settings = getSharedPreferences(PERFS_NAME, 0);
+        
+		//startServiceFunc();
 		
-		doBindService();
-		
+		//doBindService();
+
         dm = new DataManager();
+        u = new User();
+        
+        DataManager.secret = settings.getString("secret", "");
+        DataManager.token = settings.getString("token", "");
+        
+        //For now we'll just assume there's only one team key -- in the future add support for 
+        //multiple keys for different leagues
+        u.team_key = settings.getString("team_key", "");
+        
+        if(DataManager.secret.compareTo("") != 0 && DataManager.token.compareTo("") != 0){
+        	Toast.makeText(context, "Logged in", Toast.LENGTH_SHORT).show();
+        	isLoggedIn = true;
+        }
      }
+    
+    @Override
+    protected void onStop(){
+    	super.onStop();
+    	
+    	SharedPreferences settings = getSharedPreferences(PERFS_NAME, 0);
+    	SharedPreferences.Editor editor = settings.edit();
+    	editor.putString("secret", DataManager.secret);
+    	editor.putString("token", DataManager.token);
+    	editor.putString("team_key", u.team_key);
+    	editor.commit();
+    }
      
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -313,11 +347,11 @@ public class MainActivity extends Activity {
 					
 					break;
     			case 1:
-    				Roster new_roster = (Roster)msg.getData().getParcelable("roster");
+    				Roster new_roster = (Roster)msg.getData().getParcelable("http_request_return");
     		    	RosterStats rs = current_roster.CompareRoster(new_roster);
-    		    	Push_Notification(current_roster.GenerateStatChangeText(rs));
+    		    	Push_Notification(current_roster.GenerateSkaterStatChangeText(rs), current_roster.GenerateGoalieStatChangeText(rs));
     			case 2:
-    				//new User(handler, 2);
+    				u = new User(handler, 3);
     				break;
     			default:
     				break;
@@ -326,21 +360,26 @@ public class MainActivity extends Activity {
     };
     
     public void config_google(View view){
-    	new Roster("303.l.69307.t.5", "2013-02-26", handler, 0);
+    	if(isLoggedIn){
+    		new Roster(u.team_key, "", handler, 0);
+
+	        Timer update_stats_timer = new Timer();
+	        update_stats_timer.schedule(new TimerTask() {
+	           @Override
+	           public void run() {CheckForUpdatedStats();}
+	        }, 30000, 30000);
+    	}
+    	else{
+	        Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show();
+    	}
     	
-        Timer update_stats_timer = new Timer();
-        update_stats_timer.schedule(new TimerTask() {
-           @Override
-           public void run() {CheckForUpdatedStats();}
-        }, 60000, 60000);
-        
     }
 
     private void CheckForUpdatedStats() {
-    	new Roster("303.l.69307.t.5", "2013-02-26", handler, 1);
+    	new Roster(u.team_key, "2013-02-26", handler, 1);
     }
     
-    public void Push_Notification(String text){
+    public void Push_Notification(String skater_text, String goalie_text){
 		Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE); 
@@ -348,12 +387,23 @@ public class MainActivity extends Activity {
 	    NotificationCompat.Builder builder =  
 	            new NotificationCompat.Builder(this)
 	    		.setSmallIcon(R.drawable.ic_launcher)
-	            .setContentTitle("New Stat Changes")  
-	            .setContentText(text)
+	            .setContentTitle("New Skater Stat Changes")  
+	            .setContentText(skater_text)
 	            .setContentIntent(pendingIntent);
 	    
 	    Notification notification= builder.build();
-	    notificationManager.notify(0, notification);
+	    
+	    if(skater_text.compareTo("") != 0){
+	    	notificationManager.notify(0, notification);
+	    }
+	    
+	    if(goalie_text.compareTo("") != 0){
+	    	builder.setContentTitle("New Goalie Stat Changes");
+	    	builder.setContentText(goalie_text);
+	    	builder.build();
+	    
+	    	notificationManager.notify(1, notification);
+	    }
     }
     
     public void test_click(View view){

@@ -51,8 +51,6 @@ public abstract class ExecuteSignedGet extends AsyncTask<String,Void,Void> {
 			DataManager.mConsumer.setTokenWithSecret(DataManager.token, DataManager.secret);
 			sUrl = DataManager.mConsumer.sign(GenerateURL());
 			request = new HttpGet(sUrl);
-        	Log.d("HockeyLogCat", "Get Roster with address: " + GenerateURL());
-        	Log.d("HockeyLogCat", "Get Roster with signed address: " + sUrl);
         	
 			httpResponse = httpClient.execute(request);
 			entity = httpResponse.getEntity();
