@@ -1,11 +1,14 @@
 package com.example.betteryahoohockey;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import Utils.AuthenticateUser;
 import Utils.DataManager;
 import Utils.RetrieveToken;
+import Utils.RowSplit;
 import YahooObjects.GoalieStats;
 import YahooObjects.Roster;
 import YahooObjects.Roster.RosterStats;
@@ -44,6 +47,7 @@ import android.os.RemoteException;
 
 
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.util.Log;
 
 
@@ -308,6 +312,19 @@ public class MainActivity extends Activity {
 					TableRow tr;
 					TextView tv;
 					
+					LinkedList pList = new LinkedList();
+					LinkedList gList = new LinkedList();
+					
+					row_text = " ";
+					row_text += "," + "G" + "," + "A" + "," + "+/-" + "," + "PPP" + "," + "SOG" + "," + "H";
+					
+					pList.addLast(row_text);
+					
+					row_text = " ";
+					row_text += "," + "W" + "," + "GAA" + "," + "SV" + "," + "SA" + "," + "SV%" + "," + "SO";
+					gList.addLast(row_text);
+					
+					
     				for(int i = 0; i < r.players.size(); i++){
     					try {
     						row_text = "";
@@ -315,35 +332,39 @@ public class MainActivity extends Activity {
     						
     						if(r.players.get(i).positions.compareTo("G") == 0 ){
     							GoalieStats gs = (GoalieStats)r.players.get(i).stats;
-    							row_text += " " + gs.wins + " " + gs.gaa + " " + gs.saves + " " + gs.save_attempts + " " + gs.save_percentage + " " + gs.shutouts;
+    							row_text += "," + gs.wins + "," + gs.gaa + "," + gs.saves + "," + gs.save_attempts + "," + gs.save_percentage + "," + gs.shutouts;
+    							gList.addLast(row_text);
     						}
     						else{
     							SkaterStats ss = (SkaterStats)r.players.get(i).stats;
-    							row_text += " " + ss.goals + " " + ss.assists + " " + ss.plus_minus + " " + ss.power_play_points + " " + ss.shots_on_goal + " " + ss.hits;
+    							row_text += "," + ss.goals + "," + ss.assists + "," + ss.plus_minus + "," + ss.power_play_points + "," + ss.shots_on_goal + "," + ss.hits;
+    							pList.addLast(row_text);
     						}
-    						
-    						tr = new TableRow(context);
-    						tv = new TextView(context);
-    						tr.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-    						tv.setText(row_text);
-    						tr.addView(tv);
-    						tl.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-    						
     						
     					} catch (Exception e) {
     						e.printStackTrace();
     					}
     				}
     				
-
-					tr = new TableRow(context);
-					tv = new TextView(context);
-					row_text = "";
-					row_text += " " + r.stats.skater_stats.goals + " " + r.stats.skater_stats.assists + " " + r.stats.skater_stats.plus_minus + " " + r.stats.skater_stats.power_play_points + " " + r.stats.skater_stats.shots_on_goal + " " + r.stats.skater_stats.hits;
-					tr.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-					tv.setText(row_text);
-					tr.addView(tv);
-					tl.addView(tr, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+    				row_text = "Total";
+					row_text += "," + r.stats.skater_stats.goals + "," + r.stats.skater_stats.assists + "," + r.stats.skater_stats.plus_minus + "," + r.stats.skater_stats.power_play_points + "," + r.stats.skater_stats.shots_on_goal + "," + r.stats.skater_stats.hits;
+					pList.addLast(row_text);
+					
+					row_text = "Total";
+					row_text += "," + r.stats.goalie_stats.wins + "," + r.stats.goalie_stats.gaa + "," + r.stats.goalie_stats.saves + "," + r.stats.goalie_stats.save_attempts + "," + r.stats.goalie_stats.save_percentage + "," + r.stats.goalie_stats.shutouts;
+					gList.addLast(row_text);
+					
+					Iterator i = pList.iterator();
+					while(i.hasNext())
+					{
+						RowSplit.splitText((String)i.next(), context, tl);
+					}
+					
+					i = gList.iterator();
+					while(i.hasNext())
+					{
+						RowSplit.splitText((String)i.next(), context, tl);
+					}
 					
 					break;
     			case 1:
