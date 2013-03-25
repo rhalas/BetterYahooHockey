@@ -131,10 +131,15 @@ public class MainActivity extends Activity {
 	    public void handleMessage(Message msg) {
 	    	Log.d("TestService","handleMessage called from App");
 			    switch (msg.what) {
-	            case MyServiceClass.MSG_SET_VALUE:
+			    case MyServiceClass.MSG_SET_VALUE:
 	                //mCallbackText.setText("Received from service: " + msg.arg1);
 	                break;
+			    case MyServiceClass.MSG_UPDATE_TABLE:
+			    	Log.d("TestService","handleMessage Updating Roster Table");
+			    	new Roster(u.team_key, "", handler, 0);
+	                break;
 	            default:
+	            	Log.d("TestService","handleMessage called from App, Unhandled Case: " + msg.what);
 	                super.handleMessage(msg);
 	        }
 	    }
@@ -235,10 +240,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         
         SharedPreferences settings = getSharedPreferences(PERFS_NAME, 0);
-        
-		//startServiceFunc();
-		
-		//doBindService();
 
         dm = new DataManager();
         u = new User();
@@ -260,12 +261,7 @@ public class MainActivity extends Activity {
     protected void onStop(){
     	super.onStop();
     	
-    	SharedPreferences settings = getSharedPreferences(PERFS_NAME, 0);
-    	SharedPreferences.Editor editor = settings.edit();
-    	editor.putString("secret", DataManager.secret);
-    	editor.putString("token", DataManager.token);
-    	editor.putString("team_key", u.team_key);
-    	editor.commit();
+    	saveSettings();
     }
      
     @Override
@@ -283,7 +279,11 @@ public class MainActivity extends Activity {
         if (uri != null && uri.toString().startsWith(DataManager.callbackUrl)) {
             String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
             new RetrieveToken(dm, handler, 2).execute(verifier, null, null);
+            isLoggedIn = true;
         }
+        saveSettings();
+        startServiceFunc();		
+		doBindService();
     }
     
     public void config_yahoo(View view){
@@ -368,9 +368,8 @@ public class MainActivity extends Activity {
 					
 					break;
     			case 1:
-    				Roster new_roster = (Roster)msg.getData().getParcelable("http_request_return");
-    		    	RosterStats rs = current_roster.CompareRoster(new_roster);
-    		    	Push_Notification(current_roster.GenerateSkaterStatChangeText(rs), current_roster.GenerateGoalieStatChangeText(rs));
+    				new Roster(u.team_key, "", handler, 0);
+    				break;
     			case 2:
     				u = new User(handler, 3);
     				break;
@@ -382,50 +381,25 @@ public class MainActivity extends Activity {
     
     public void config_google(View view){
     	if(isLoggedIn){
-    		new Roster(u.team_key, "", handler, 0);
-
-	        Timer update_stats_timer = new Timer();
-	        update_stats_timer.schedule(new TimerTask() {
-	           @Override
-	           public void run() {CheckForUpdatedStats();}
-	        }, 30000, 30000);
+    		startServiceFunc();		
+    		doBindService();
     	}
     	else{
 	        Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show();
     	}
     	
     }
-
-    private void CheckForUpdatedStats() {
-    	new Roster(u.team_key, "2013-02-26", handler, 1);
-    }
     
-    public void Push_Notification(String skater_text, String goalie_text){
-		Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE); 
-		
-	    NotificationCompat.Builder builder =  
-	            new NotificationCompat.Builder(this)
-	    		.setSmallIcon(R.drawable.ic_launcher)
-	            .setContentTitle("New Skater Stat Changes")  
-	            .setContentText(skater_text)
-	            .setContentIntent(pendingIntent);
-	    
-	    Notification notification= builder.build();
-	    
-	    if(skater_text.compareTo("") != 0){
-	    	notificationManager.notify(0, notification);
-	    }
-	    
-	    if(goalie_text.compareTo("") != 0){
-	    	builder.setContentTitle("New Goalie Stat Changes");
-	    	builder.setContentText(goalie_text);
-	    	builder.build();
-	    
-	    	notificationManager.notify(1, notification);
-	    }
+    private void saveSettings()
+    {
+    	SharedPreferences settings = getSharedPreferences(PERFS_NAME, 0);
+    	SharedPreferences.Editor editor = settings.edit();
+    	editor.putString("secret", DataManager.secret);
+    	editor.putString("token", DataManager.token);
+    	editor.putString("team_key", u.team_key);
+    	editor.commit();
     }
+
     
     public void test_click(View view){
 	}
