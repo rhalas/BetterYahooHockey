@@ -246,7 +246,7 @@ public class MainActivity extends Activity {
         
         DataManager.secret = settings.getString("secret", "");
         DataManager.token = settings.getString("token", "");
-        
+        DataManager.oauth_session_handle = settings.getString("oauth_session_handle", "");
         //For now we'll just assume there's only one team key -- in the future add support for 
         //multiple keys for different leagues
         u.team_key = settings.getString("team_key", "");
@@ -255,12 +255,15 @@ public class MainActivity extends Activity {
         	Toast.makeText(context, "Logged in", Toast.LENGTH_SHORT).show();
         	isLoggedIn = true;
         }
+        if(u.team_key.isEmpty() && isLoggedIn){
+        	u = new User(handler, 3);
+        }
      }
     
     @Override
     protected void onStop(){
     	super.onStop();
-    	
+
     	saveSettings();
     }
      
@@ -324,7 +327,10 @@ public class MainActivity extends Activity {
 					row_text += "," + "W" + "," + "GAA" + "," + "SV" + "," + "SA" + "," + "SV%" + "," + "SO";
 					gList.addLast(row_text);
 					
-					
+					if(r.players == null){
+						Toast.makeText(context, "Error grabbing roster", Toast.LENGTH_SHORT).show();
+					}
+					else{					
     				for(int i = 0; i < r.players.size(); i++){
     					try {
     						row_text = "";
@@ -365,7 +371,7 @@ public class MainActivity extends Activity {
 					{
 						RowSplit.splitText((String)i.next(), context, tl);
 					}
-					
+			}
 					break;
     			case 1:
     				new Roster(u.team_key, "", handler, 0);

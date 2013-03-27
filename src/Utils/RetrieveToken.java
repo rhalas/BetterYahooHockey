@@ -31,6 +31,8 @@ public class RetrieveToken extends AsyncTask<String,Void,Void> {
         	
         	DataManager.mProvider.retrieveAccessToken(DataManager.mConsumer, verifier);
         	
+        	DataManager.oauth_session_handle = DataManager.mProvider.getResponseParameters().getFirst("oauth_session_handle");
+
         	//For some reason the token isn't staying persistent (Java thing?), this gets around it for now
         	DataManager.token = DataManager.mConsumer.getToken();
         	DataManager.secret = DataManager.mConsumer.getTokenSecret();

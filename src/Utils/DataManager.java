@@ -30,6 +30,8 @@ public class DataManager {
     public static HttpParams params;
     public static HttpClient client;
     
+    public static String oauth_session_handle;
+    
     public static String token;
     public static String secret;
     
