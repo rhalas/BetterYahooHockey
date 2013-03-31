@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 public class MyServiceClass extends Service {
 	private static final String PERFS_NAME = "BetterYahooHockeyPerfs";
+	private Calendar currDate;
 	public Roster current_roster;
 	public User u;
 	public DataManager dm;
@@ -106,7 +107,9 @@ public class MyServiceClass extends Service {
 	        //multiple keys for different leagues
 	        u.team_key = settings.getString("team_key", "");
 	        
-
+	        /* Get the current date and store it */
+	        currDate = Calendar.getInstance();
+	        
 	        new Roster(u.team_key, "", handler, 0);
 	        
 			new Roster(u.team_key, "", handler, 1);
@@ -123,11 +126,15 @@ public class MyServiceClass extends Service {
 		myIntent = new Intent(this, MyServiceClass.class);
 		pintent = PendingIntent.getService(this, 0, myIntent, 0);
 		
-		CheckForUpdatedStats();
-
 		alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-		// Start every 30 seconds
+		
+		// Start every 60 seconds
 		Calendar cal = Calendar.getInstance();
+		
+		if(CheckForNewDay(cal) == false)
+		{
+			CheckForUpdatedStats();
+		}
 		
 		alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() + (mSeconds*1000), pintent);
 		
@@ -276,6 +283,18 @@ public class MyServiceClass extends Service {
 
 	    private void CheckForUpdatedStats() {
 	    	new Roster(u.team_key, "", handler, 1);
+	    }
+	    
+	    private boolean CheckForNewDay(Calendar cal) {
+	    	if(cal.get(Calendar.DAY_OF_WEEK) != currDate.get(Calendar.DAY_OF_WEEK))
+	    	{
+	    		/* New day */
+	    		currDate = cal;
+	    		/* Handle Date Change, Grab a new roster and use that as our baseline */
+	    		new Roster(u.team_key, "", handler, 0);
+	    		return true;
+	    	}
+	    	return false;
 	    }
 	    
 }
