@@ -130,7 +130,9 @@ public class Roster implements Parcelable {
 			total_change += " H:" + stats.skater_stats.hits;
 		}
 		
-		change_strings.add(total_change);
+		if(total_change.compareTo("") != 0){
+			change_strings.add(total_change);
+		}
 		
 		for(int i = 0; i < stats.skaters.size(); i++){
 			Boolean appendToList = false;
@@ -197,7 +199,9 @@ public class Roster implements Parcelable {
 			total_change += " SO:" + stats.goalie_stats.shutouts;
 		}
 		
-		change_strings.add(total_change);
+		if(total_change.compareTo("") != 0){
+			change_strings.add(total_change);
+		}
 		
 		for(int i = 0; i < stats.goalies.size(); i++){
 			Boolean appendToList = false;
