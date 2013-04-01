@@ -178,8 +178,6 @@ public class Roster implements Parcelable {
 		
 		String total_change = "";
 		
-		stats.goalie_stats.wins = 3;
-		
 		if(stats.goalie_stats.gaa != 0){
 			total_change += "GAA:" + stats.goalie_stats.gaa;
 		}
