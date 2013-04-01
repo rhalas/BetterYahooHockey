@@ -28,6 +28,7 @@ import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ import android.os.RemoteException;
 
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.Log;
 
 
@@ -59,6 +61,7 @@ public class MainActivity extends Activity {
 	public User u;
 	
 	public boolean isLoggedIn = false;
+	public boolean bDisplayImg = true;
 	
 	private Context context;
 	private Intent myIntent;
@@ -392,6 +395,21 @@ public class MainActivity extends Activity {
     	}
     	else{
 	        Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show();
+    	}
+    	
+    	if(bDisplayImg)
+    	{
+    		 // Load the ImageView that will host the animation and
+    		 // set its background to our AnimationDrawable XML resource.
+    		 ImageView img = (ImageView)findViewById(R.id.dancing_guy_image);
+    		 img.setBackgroundResource(R.drawable.dancing_guy);
+
+    		 // Get the background, which has been compiled to an AnimationDrawable object.
+    		 AnimationDrawable frameAnimation = (AnimationDrawable) img.getBackground();
+
+    		 // Start the animation (looped playback by default).
+    		 frameAnimation.start();
+    		bDisplayImg = false;
     	}
     	
     }
