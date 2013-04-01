@@ -48,5 +48,19 @@ public class SkaterStats extends Stats{
 	public SkaterStats(JSONArray jArray){
 		super(jArray);
 	}
+	
+	public Stats CompareStats(Stats s){
+		SkaterStats new_ss = (SkaterStats)s;
+		SkaterStats ss = new SkaterStats();
+		
+		ss.goals = new_ss.goals - this.goals;
+		ss.assists = new_ss.assists - this.assists;
+		ss.plus_minus = new_ss.plus_minus - this.plus_minus;
+		ss.power_play_points = new_ss.power_play_points - this.power_play_points;
+		ss.shots_on_goal = new_ss.shots_on_goal - this.shots_on_goal;
+		ss.hits = new_ss.hits - this.hits;
+		
+		return (Stats)ss;
+	}
 
 }

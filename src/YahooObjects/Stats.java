@@ -101,4 +101,6 @@ public abstract class Stats{
 			}	
 		}
 	}
+	
+	protected abstract Stats CompareStats(Stats s);
 }

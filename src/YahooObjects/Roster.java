@@ -1,5 +1,6 @@
 package YahooObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Handler;
@@ -19,10 +20,14 @@ public class Roster implements Parcelable {
 	private String date;
 		
 	public class RosterStats{
+		public List<Player> skaters;
+		public List<Player> goalies;
 		public SkaterStats skater_stats;
 		public GoalieStats goalie_stats;
 		
 		public RosterStats(){
+			this.skaters = new ArrayList<Player>();
+			this.goalies = new ArrayList<Player>();
 			this.skater_stats = new SkaterStats();
 			this.goalie_stats = new GoalieStats();
 		}
@@ -57,8 +62,33 @@ public class Roster implements Parcelable {
 	}
 	
 	public RosterStats CompareRoster(Roster r){
-		RosterStats rs = new RosterStats();
-
+ 		RosterStats rs = new RosterStats();
+ 		
+		for(int i = 0; i < r.players.size(); i++){
+			Player p_current = this.players.get(i);
+			Player p_new = r.players.get(i);
+			
+			if(p_current.positions.compareTo("G") == 0){
+				Player g = new Player();
+				GoalieStats gs = (GoalieStats)p_current.stats.CompareStats(p_new.stats);
+				g.first_name = p_current.first_name;
+				g.last_name = p_current.last_name;
+				g.stats = gs;
+				
+				rs.goalies.add(g);
+			}
+			else{
+				Player s = new Player();
+				SkaterStats ss = (SkaterStats)p_current.stats.CompareStats(p_new.stats);
+				s.first_name = p_current.first_name;
+				s.last_name = p_current.last_name;
+				s.stats = ss;
+				
+				
+				rs.skaters.add(s);
+			}
+		}
+		
 		rs.skater_stats.goals = r.stats.skater_stats.goals - this.stats.skater_stats.goals;
 		rs.skater_stats.assists = r.stats.skater_stats.assists - this.stats.skater_stats.assists;
 		rs.skater_stats.plus_minus = r.stats.skater_stats.plus_minus - this.stats.skater_stats.plus_minus;
@@ -76,54 +106,140 @@ public class Roster implements Parcelable {
 		return rs;
 	}
 	
-	public String GenerateSkaterStatChangeText(RosterStats stats){
-		String text = "";
+	public List<String> GenerateSkaterStatChangeText(RosterStats stats){
+		List<String> change_strings = new ArrayList<String>();
+		
+		String total_change = "";
 		
 		if(stats.skater_stats.goals != 0){
-			text += "G:" + stats.skater_stats.goals;
+			total_change += "G:" + stats.skater_stats.goals;
 		}
 		if(stats.skater_stats.assists != 0){
-			text += " A:" + stats.skater_stats.assists;
+			total_change += " A:" + stats.skater_stats.assists;
 		}
 		if(stats.skater_stats.plus_minus != 0){
-			text += " +/-: " + stats.skater_stats.plus_minus;
+			total_change += " +/-: " + stats.skater_stats.plus_minus;
 		}
 		if(stats.skater_stats.power_play_points != 0){
-			text += " PPP: " + stats.skater_stats.power_play_points;
+			total_change += " PPP: " + stats.skater_stats.power_play_points;
 		}
 		if(stats.skater_stats.shots_on_goal != 0){
-			text += " S:" + stats.skater_stats.shots_on_goal;
+			total_change += " S:" + stats.skater_stats.shots_on_goal;
 		}
 		if(stats.skater_stats.hits != 0){
-			text += " H:" + stats.skater_stats.hits;
+			total_change += " H:" + stats.skater_stats.hits;
 		}
 		
-		return text;
+		change_strings.add(total_change);
+		
+		for(int i = 0; i < stats.skaters.size(); i++){
+			Boolean appendToList = false;
+			Player p = stats.skaters.get(i);
+			
+			String s = p.first_name + " " + p.last_name + " ";
+			
+			SkaterStats ss = (SkaterStats)p.stats;
+			
+			if(ss.goals != 0){
+				s += "G: " + ss.goals + " ";
+				appendToList = true;
+			}
+			if(ss.assists != 0){
+				s += "A: " + ss.assists + " ";
+				appendToList = true;
+			}
+			if(ss.plus_minus != 0){
+				s += "+/-: " + ss.plus_minus + " ";
+				appendToList = true;
+			}
+			if(ss.power_play_points != 0){
+				s += "PPP: " + ss.power_play_points + " ";
+				appendToList = true;
+			}
+			if(ss.shots_on_goal != 0){
+				s += "SOG: " + ss.shots_on_goal + " ";
+				appendToList = true;
+			}
+			if(ss.hits != 0){
+				s += "H: " + ss.hits + " ";
+				appendToList = true;
+			}
+			
+			if(appendToList){
+				change_strings.add(s);
+			}
+		}
+		
+		return change_strings;
 	}
 	
-	public String GenerateGoalieStatChangeText(RosterStats stats){
-		String text = "";
+	public List<String> GenerateGoalieStatChangeText(RosterStats stats){
+		List<String> change_strings = new ArrayList<String>();
+		
+		String total_change = "";
+		
+		stats.goalie_stats.wins = 3;
 		
 		if(stats.goalie_stats.gaa != 0){
-			text += "GAA:" + stats.goalie_stats.gaa;
+			total_change += "GAA:" + stats.goalie_stats.gaa;
 		}
 		if(stats.goalie_stats.saves != 0){
-			text += " S:" + stats.goalie_stats.saves;
+			total_change += " S:" + stats.goalie_stats.saves;
 		}
 		if(stats.goalie_stats.save_attempts != 0){
-			text += " SA:" + stats.goalie_stats.save_attempts;
+			total_change += " SA:" + stats.goalie_stats.save_attempts;
 		}
 		if(stats.goalie_stats.save_percentage != 0){
-			text += " S%:" + stats.goalie_stats.save_percentage;
+			total_change += " S%:" + stats.goalie_stats.save_percentage;
 		}
 		if(stats.goalie_stats.wins != 0){
-			text += " W:" + stats.goalie_stats.wins;
+			total_change += " W:" + stats.goalie_stats.wins;
 		}
 		if(stats.goalie_stats.shutouts != 0){
-			text += " SO:" + stats.goalie_stats.shutouts;
+			total_change += " SO:" + stats.goalie_stats.shutouts;
 		}
 		
-		return text;
+		change_strings.add(total_change);
+		
+		for(int i = 0; i < stats.goalies.size(); i++){
+			Boolean appendToList = false;
+			Player p = stats.goalies.get(i);
+			
+			String s = p.first_name + " " + p.last_name + " ";
+			
+			GoalieStats gs = (GoalieStats)p.stats;
+			
+			if(gs.gaa != 0){
+				s += "GAA: " + gs.gaa + " ";
+				appendToList = true;
+			}
+			if(gs.saves != 0){
+				s += "S: " + gs.saves + " ";
+				appendToList = true;
+			}
+			if(gs.save_attempts != 0){
+				s += "SA: " + gs.save_attempts + " ";
+				appendToList = true;
+			}
+			if(gs.save_percentage != 0){
+				s += "S%: " + gs.save_percentage + " ";
+				appendToList = true;
+			}
+			if(gs.wins != 0){
+				s += "W: " + gs.wins + " ";
+				appendToList = true;
+			}
+			if(gs.shutouts != 0){
+				s += "SO: " + gs.shutouts + " ";
+				appendToList = true;
+			}
+			
+			if(appendToList){
+				change_strings.add(s);
+			}
+		}
+		
+		return change_strings;
 	}
 	
 }

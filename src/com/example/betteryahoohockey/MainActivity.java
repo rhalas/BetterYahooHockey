@@ -402,6 +402,7 @@ public class MainActivity extends Activity {
     	SharedPreferences.Editor editor = settings.edit();
     	editor.putString("secret", DataManager.secret);
     	editor.putString("token", DataManager.token);
+    	editor.putString("oauth_session_handle", DataManager.oauth_session_handle);
     	editor.putString("team_key", u.team_key);
     	editor.commit();
     }

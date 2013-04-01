@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import Utils.DataManager;
 import Utils.RowSplit;
@@ -17,6 +18,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +37,7 @@ import android.widget.Toast;
 
 public class MyServiceClass extends Service {
 	private static final String PERFS_NAME = "BetterYahooHockeyPerfs";
-	private Calendar currDate;
+        private Calendar currDate;
 	public Roster current_roster;
 	public User u;
 	public DataManager dm;
@@ -45,7 +47,9 @@ public class MyServiceClass extends Service {
 	private long mSeconds = 60;
 	private int mCounter = 1;
 	private boolean OnFirstBoot = true;
-	
+
+	private NotificationCompat.Builder mBuilder;
+	private NotificationManager mNotificationManager;
 	
     /** Keeps track of all current registered clients. */
     Messenger mClients = null;
@@ -102,18 +106,24 @@ public class MyServiceClass extends Service {
 	        
 	        DataManager.secret = settings.getString("secret", "");
 	        DataManager.token = settings.getString("token", "");
+	        DataManager.oauth_session_handle = settings.getString("oauth_session_handle", "");
 	        
 	        //For now we'll just assume there's only one team key -- in the future add support for 
 	        //multiple keys for different leagues
 	        u.team_key = settings.getString("team_key", "");
-	        
+
 	        /* Get the current date and store it */
 	        currDate = Calendar.getInstance();
-	        
+
 	        new Roster(u.team_key, "", handler, 0);
 	        
 			new Roster(u.team_key, "", handler, 1);
 			
+			this.mBuilder =	new NotificationCompat.Builder(this)
+			    				.setSmallIcon(R.drawable.ic_launcher);
+			
+	    	this.mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	    	
 			//sendRemoteTableUpdate();
 			
 			OnFirstBoot = false;
@@ -121,21 +131,21 @@ public class MyServiceClass extends Service {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+			
 		}
 		
 		myIntent = new Intent(this, MyServiceClass.class);
 		pintent = PendingIntent.getService(this, 0, myIntent, 0);
-		
+
 		alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-		
-		// Start every 60 seconds
+		// Start every 30 seconds
 		Calendar cal = Calendar.getInstance();
-		
+
 		if(CheckForNewDay(cal) == false)
 		{
 			CheckForUpdatedStats();
 		}
-		
+
 		alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() + (mSeconds*1000), pintent);
 		
 		mCounter++;
@@ -252,32 +262,41 @@ public class MyServiceClass extends Service {
 			}
 	    };
 
-	    public void Push_Notification(String skater_text, String goalie_text){
-			Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FLAG_ACTIVITY_NEW_TASK);
-			NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+	    public void Push_Notification(List<String> skater_changes, List<String> goalie_changes){
+			Intent resultIntent = new Intent(this, MainActivity.class);
 			
-			sendRemoteTableUpdate();
+			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+			stackBuilder.addParentStack(MainActivity.class);
+			stackBuilder.addNextIntent(resultIntent);
 			
-		    NotificationCompat.Builder builder =  
-		            new NotificationCompat.Builder(this)
-		    		.setSmallIcon(R.drawable.ic_launcher)
-		            .setContentTitle("New Skater Stat Changes")  
-		            .setContentText(skater_text)
-		            .setContentIntent(pendingIntent);
+			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+			
+			this.mBuilder.setContentIntent(resultPendingIntent);
+			
+			//sendRemoteTableUpdate();
 		    
-		    Notification notification= builder.build();
-		    
-		    if(skater_text.compareTo("") != 0){
-		    	notificationManager.notify(0, notification);
+		    if(skater_changes.size() != 0){
+				NotificationCompat.InboxStyle skater_inbox = new NotificationCompat.InboxStyle();
+				skater_inbox.setBigContentTitle("New Skater Stat Changes");
+		    	
+		    	for(int i = 0; i < skater_changes.size(); i++){
+		    		skater_inbox.addLine(skater_changes.get(i));
+		    	}
+		    	
+		    	mBuilder.setStyle(skater_inbox);
+		    	this.mNotificationManager.notify(0, this.mBuilder.build());
 		    }
 		    
-		    if(goalie_text.compareTo("") != 0){
-		    	builder.setContentTitle("New Goalie Stat Changes");
-		    	builder.setContentText(goalie_text);
-		    	builder.build();
-		    
-		    	notificationManager.notify(1, notification);
+		    if(goalie_changes.size() != 0){
+				NotificationCompat.InboxStyle goalie_inbox = new NotificationCompat.InboxStyle();
+				goalie_inbox.setBigContentTitle("New Goalie Stat Changes");
+		    	
+		    	for(int i = 0; i < goalie_changes.size(); i++){
+		    		goalie_inbox.addLine(goalie_changes.get(i));
+		    	}
+		    	
+		    	mBuilder.setStyle(goalie_inbox);
+		    	this.mNotificationManager.notify(1, this.mBuilder.build());
 		    }
 	    }
 
@@ -296,5 +315,5 @@ public class MyServiceClass extends Service {
 	    	}
 	    	return false;
 	    }
-	    
+
 }

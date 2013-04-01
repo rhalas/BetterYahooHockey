@@ -50,4 +50,18 @@ public class GoalieStats extends Stats{
 	public GoalieStats(JSONArray jArray){
 		super(jArray);
 	}
+	
+	public Stats CompareStats(Stats s){
+		GoalieStats new_gs = (GoalieStats)s;
+		GoalieStats gs = new GoalieStats();
+		
+		gs.wins = new_gs.wins - this.wins;
+		gs.gaa = new_gs.gaa - this.gaa;
+		gs.saves = new_gs.saves - this.saves;
+		gs.save_attempts = new_gs.save_attempts - this.save_attempts;
+		gs.save_percentage = new_gs.save_percentage - this.save_percentage;
+		gs.shutouts = new_gs.shutouts - this.shutouts;
+		
+		return (Stats)gs;
+	}
 }
