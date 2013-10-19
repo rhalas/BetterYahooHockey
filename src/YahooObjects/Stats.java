@@ -13,6 +13,7 @@ public abstract class Stats{
 		GOALS(1),
 		ASSISTS(2),
 		PLUS_MINUS(4),
+		PENALTY_MINUTES(5),
 		POWER_PLAY_POINTS(8),
 		SHOTS_ON_GOAL(14),
 		WINS(19),
@@ -37,6 +38,8 @@ public abstract class Stats{
 					return ASSISTS;
 				case 4:
 					return PLUS_MINUS;
+				case 5:
+					return PENALTY_MINUTES;
 				case 8:
 					return POWER_PLAY_POINTS;
 				case 14:

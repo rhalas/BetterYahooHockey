@@ -30,4 +30,21 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>libs/android-support-v4.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/BetterYahooHockey/libs/android-support-v4.jar</locationURI>
+		</link>
+		<link>
+			<name>libs/signpost-commonshttp4-1.2.1.2.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/BetterYahooHockey/libs/signpost-commonshttp4-1.2.1.2.jar</locationURI>
+		</link>
+		<link>
+			<name>libs/signpost-core-1.2.1.2.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/BetterYahooHockey/libs/signpost-core-1.2.1.2.jar</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

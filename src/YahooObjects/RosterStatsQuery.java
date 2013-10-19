@@ -47,7 +47,7 @@ public class RosterStatsQuery extends ExecuteSignedGet{
 			
 			JSONObject jObjTmp;
 			
-			for(int i = 0; i < 16; i++){
+			for(int i = 0; i < 19; i++){
 				jObjTmp = jObj.getJSONObject(Integer.toString(i));
 				Player p = new Player(jObjTmp.getJSONArray("player"));
 				players.add(p);
@@ -69,7 +69,6 @@ public class RosterStatsQuery extends ExecuteSignedGet{
 						this.r.stats.skater_stats.assists += ss.assists;
 						this.r.stats.skater_stats.power_play_points += ss.power_play_points;
 						this.r.stats.skater_stats.shots_on_goal += ss.shots_on_goal;
-						this.r.stats.skater_stats.hits += ss.hits;
 						this.r.stats.skater_stats.plus_minus += ss.plus_minus;
 					}		
 				}

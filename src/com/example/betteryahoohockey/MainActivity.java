@@ -346,7 +346,7 @@ public class MainActivity extends Activity {
     						}
     						else{
     							SkaterStats ss = (SkaterStats)r.players.get(i).stats;
-    							row_text += "," + ss.goals + "," + ss.assists + "," + ss.plus_minus + "," + ss.power_play_points + "," + ss.shots_on_goal + "," + ss.hits;
+    							row_text += "," + ss.goals + "," + ss.assists + "," + ss.plus_minus + "," + ss.power_play_points + "," + ss.shots_on_goal + "," + ss.penalty_minutes;
     							pList.addLast(row_text);
     						}
     						
@@ -356,7 +356,7 @@ public class MainActivity extends Activity {
     				}
     				
     				row_text = "Total";
-					row_text += "," + r.stats.skater_stats.goals + "," + r.stats.skater_stats.assists + "," + r.stats.skater_stats.plus_minus + "," + r.stats.skater_stats.power_play_points + "," + r.stats.skater_stats.shots_on_goal + "," + r.stats.skater_stats.hits;
+					row_text += "," + r.stats.skater_stats.goals + "," + r.stats.skater_stats.assists + "," + r.stats.skater_stats.plus_minus + "," + r.stats.skater_stats.power_play_points + "," + r.stats.skater_stats.shots_on_goal + "," + r.stats.skater_stats.penalty_minutes;
 					pList.addLast(row_text);
 					
 					row_text = "Total";

@@ -7,6 +7,7 @@ public class SkaterStats extends Stats{
 	public int goals;
   	public int assists;
   	public int plus_minus;
+  	public int penalty_minutes;
   	public int power_play_points;
   	public int shots_on_goal;
   	public int hits;
@@ -24,14 +25,14 @@ public class SkaterStats extends Stats{
 			case PLUS_MINUS:
 				this.plus_minus = value;
 				break;
+			case PENALTY_MINUTES:
+				this.penalty_minutes = value;
+				break;
 			case POWER_PLAY_POINTS:
 				this.power_play_points = value;
 				break;
 			case SHOTS_ON_GOAL:
 				this.shots_on_goal = value;
-				break;
-			case HITS:
-				this.hits = value;
 				break;
 		}
   	}
@@ -40,9 +41,9 @@ public class SkaterStats extends Stats{
   		this.goals = 0;
   		this.assists = 0;
   	  	this.plus_minus = 0;
+  	  	this.penalty_minutes = 0;
   	  	this.power_play_points = 0;
   	  	this.shots_on_goal = 0;
-  	  	this.hits = 0;
   	}
   	
 	public SkaterStats(JSONArray jArray){
@@ -58,7 +59,7 @@ public class SkaterStats extends Stats{
 		ss.plus_minus = new_ss.plus_minus - this.plus_minus;
 		ss.power_play_points = new_ss.power_play_points - this.power_play_points;
 		ss.shots_on_goal = new_ss.shots_on_goal - this.shots_on_goal;
-		ss.hits = new_ss.hits - this.hits;
+		ss.penalty_minutes = new_ss.penalty_minutes - this.penalty_minutes;
 		
 		return (Stats)ss;
 	}

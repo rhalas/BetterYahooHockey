@@ -94,8 +94,8 @@ public class Roster implements Parcelable {
 		rs.skater_stats.plus_minus = r.stats.skater_stats.plus_minus - this.stats.skater_stats.plus_minus;
 		rs.skater_stats.power_play_points = r.stats.skater_stats.power_play_points - this.stats.skater_stats.power_play_points;
 		rs.skater_stats.shots_on_goal = r.stats.skater_stats.shots_on_goal - this.stats.skater_stats.shots_on_goal;
-		rs.skater_stats.hits = r.stats.skater_stats.hits - this.stats.skater_stats.hits;
-		
+		rs.skater_stats.penalty_minutes = r.stats.skater_stats.penalty_minutes - this.stats.skater_stats.penalty_minutes;
+				
 		rs.goalie_stats.wins = r.stats.goalie_stats.wins - this.stats.goalie_stats.wins;
 		rs.goalie_stats.gaa = r.stats.goalie_stats.gaa - this.stats.goalie_stats.gaa;
 		rs.goalie_stats.saves = r.stats.goalie_stats.saves - this.stats.goalie_stats.saves;
@@ -126,8 +126,8 @@ public class Roster implements Parcelable {
 		if(stats.skater_stats.shots_on_goal != 0){
 			total_change += " S:" + stats.skater_stats.shots_on_goal;
 		}
-		if(stats.skater_stats.hits != 0){
-			total_change += " H:" + stats.skater_stats.hits;
+		if(stats.skater_stats.penalty_minutes != 0){
+			total_change += " PIM:" + stats.skater_stats.penalty_minutes;
 		}
 		
 		if(total_change.compareTo("") != 0){
@@ -162,8 +162,8 @@ public class Roster implements Parcelable {
 				s += "SOG: " + ss.shots_on_goal + " ";
 				appendToList = true;
 			}
-			if(ss.hits != 0){
-				s += "H: " + ss.hits + " ";
+			if(ss.penalty_minutes != 0){
+				s += "PIM: " + ss.penalty_minutes + " ";
 				appendToList = true;
 			}
 			

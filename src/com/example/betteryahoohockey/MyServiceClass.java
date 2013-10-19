@@ -111,7 +111,7 @@ public class MyServiceClass extends Service {
 	        //For now we'll just assume there's only one team key -- in the future add support for 
 	        //multiple keys for different leagues
 	        u.team_key = settings.getString("team_key", "");
-
+	        
 	        /* Get the current date and store it */
 	        currDate = Calendar.getInstance();
 
